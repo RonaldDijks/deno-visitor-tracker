@@ -1,23 +1,20 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
-import { parse } from 'https://deno.land/std/flags/mod.ts'
+import * as Config from './config.ts'
+import * as Visits from './visits.ts'
 
-const args = parse(Deno.args);
-const port = Number(args.port) || 8000;
-
-let hits = 0;
-
+const config = Config.get();
 const router = new Router();
 
-router.get('/', (ctx) => {
-  console.log(hits)
-  hits += 1;
-  ctx.response.body = hits;
+router.get('/', async (ctx) => {
+  await Visits.increase(ctx.request.ip);
+  const visits = await Visits.get();
+  ctx.response.body = visits;
 });
 
 const app = new Application();
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-await app.listen({ port }).then(() => {
+await app.listen({ port: config.port }).then(() => {
   console.log(`Server started on port: 8000`)
 });
