@@ -7,7 +7,8 @@ const redis = await connect({
   hostname: config.redis.hostname,
   port: config.redis.port,
   name: config.redis.name,
-  password: config.redis.password
+  password: config.redis.password,
+  db: config.redis.db
 });
 
 const TOTAL_VISITS_KEY = "TOTAL_VISITS";
