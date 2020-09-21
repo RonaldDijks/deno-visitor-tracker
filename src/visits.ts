@@ -1,5 +1,5 @@
 import { connect } from "https://deno.land/x/redis@v0.13.0/mod.ts";
-import * as Config from './config.ts'
+import * as Config from "./config.ts";
 
 const config = Config.get();
 
@@ -8,7 +8,7 @@ const redis = await connect({
   port: config.redis.port,
   name: config.redis.name,
   password: config.redis.password,
-  db: config.redis.db
+  db: config.redis.db,
 });
 
 const TOTAL_VISITS_KEY = "TOTAL_VISITS";
@@ -27,8 +27,7 @@ async function getUniqueVisits() {
 }
 
 async function increaseUniqueVisits(ip: string) {
-  const exists = await redis.exists(ip) != 0;
-  console.log(exists)
+  const exists = (await redis.exists(ip)) != 0;
   if (!exists) {
     await redis.set(ip, "1");
     await redis.incr(UNIQUE_VISITS_KEY);
@@ -41,13 +40,13 @@ export async function increase(ip: string) {
 }
 
 interface GetReponse {
-  total: number,
-  unique: number
+  total: number;
+  unique: number;
 }
 
 export async function get(): Promise<GetReponse> {
   return {
-    total: await getTotalVisits() as number,
-    unique: await getUniqueVisits() as number
-  }
+    total: (await getTotalVisits()) as number,
+    unique: (await getUniqueVisits()) as number,
+  };
 }
