@@ -30,12 +30,10 @@ function parseRedisURL(url: string): RedisConfig {
 }
 
 export function get(): Config {
-  const args = parse(Deno.args);
-  const redis = args.REDIS_URL
-    ? parseRedisURL(args.REDIS_URL)
-    : defaultRedisConfig;
+  const REDIS_URL = Deno.env.get("REDIS_URL");
+  const redis = REDIS_URL ? parseRedisURL(REDIS_URL) : defaultRedisConfig;
   return {
-    port: Number(args.port) || 8000,
+    port: Number(Deno.env.get("PORT")) || 8000,
     redis,
   };
 }
