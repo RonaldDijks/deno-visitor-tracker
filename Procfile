@@ -1,1 +1,1 @@
-web: deno run --allow-net=:${PORT},:${REDIS_PORT} index.ts --port=${PORT}
+web: deno run --allow-net index.ts --port=${PORT}
