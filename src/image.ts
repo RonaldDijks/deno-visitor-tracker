@@ -1,23 +1,9 @@
 import { PNGImage, RGB } from "https://deno.land/x/dpng@0.7.5/mod.ts";
 import * as font from "./font.ts";
 
-export function createImage(total: number, unique: number) {
-  const image = new PNGImage(78, 31, 24, { r: 255, g: 255, b: 255, a: 1 });
-  const red = image.createRGBColor({ r: 255, g: 0, b: 0, a: 1 });
-  writeCharacter(image, font.letters.t,  { x: 1  + 6 * 0, y: 1 });
-  writeCharacter(image, font.numbers[0], { x: 12 + 6 * 1, y: 1 });
-  writeCharacter(image, font.numbers[1], { x: 12 + 6 * 2, y: 1 });
-  writeCharacter(image, font.numbers[2], { x: 12 + 6 * 3, y: 1 });
-  writeCharacter(image, font.numbers[3], { x: 12 + 6 * 4, y: 1 });
-  writeCharacter(image, font.numbers[4], { x: 12 + 6 * 5, y: 1 });
-  writeCharacter(image, font.numbers[5], { x: 12 + 6 * 6, y: 1 });
-  writeCharacter(image, font.numbers[6], { x: 12 + 6 * 7, y: 1 });
-  writeCharacter(image, font.numbers[7], { x: 12 + 6 * 8, y: 1 });
-  writeCharacter(image, font.numbers[8], { x: 12 + 6 * 9, y: 1 });
-  writeCharacter(image, font.numbers[9], { x: 12 + 6 * 10, y: 1 });
-  image.setPixel(4, 4, red);
-  const base64 = image.getBuffer();
-  return base64;
+interface Position {
+  x: number;
+  y: number;
 }
 
 export function colorToRGB(data: number): RGB {
@@ -27,7 +13,7 @@ export function colorToRGB(data: number): RGB {
   return { r, g, b, a: 1 };
 }
 
-export function writeCharacter(
+export function drawCharacter(
   image: PNGImage,
   data: number[],
   offset: {
@@ -42,4 +28,24 @@ export function writeCharacter(
       image.setPixel(x + offset.x, y + offset.y, rgb);
     }
   }
+}
+
+export function drawNumber(image: PNGImage, offset: Position, n: number) {
+  const number_string = String(n).padStart(10, "0");
+  for (let i = 0; i < number_string.length; i++) {
+    const character = Number(number_string[i]);
+    drawCharacter(image, font.numbers[character], {
+      x: offset.x + (font.width + 1) * i,
+      y: offset.y,
+    });
+  }
+}
+
+export function drawImage(total: number, unique: number) {
+  const image = new PNGImage(78, 16, 24, { r: 255, g: 255, b: 255, a: 1 });
+  drawCharacter(image, font.letters.t, { x: 1 + 6 * 0, y: 1 });
+  drawNumber(image, { x: 18, y: 1 }, total);
+  drawCharacter(image, font.letters.u, { x: 1 + 6 * 0, y: 10 });
+  drawNumber(image, { x: 18, y: 10 }, unique);
+  return image.getBuffer();
 }
